@@ -10,6 +10,12 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 Vue.use(ElementUI);
 
+//过滤器
+import filterObj from './filter';
+for (let k in filterObj) {
+  Vue.filter(k, filterObj[k])
+}
+
 import "@/assets/css/reset.css"
 
 Vue.config.productionTip = false

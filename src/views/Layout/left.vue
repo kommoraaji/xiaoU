@@ -39,12 +39,12 @@
               <span>商城管理</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="2-1">商品分类</el-menu-item>
-              <el-menu-item index="2-2">商品规格</el-menu-item>
-              <el-menu-item index="2-3">商品管理</el-menu-item>
-              <el-menu-item index="2-4">会员管理</el-menu-item>
-              <el-menu-item index="2-5">轮播图管理</el-menu-item>
-              <el-menu-item index="2-6">秒杀活动</el-menu-item>
+              <el-menu-item index="/category">商品分类</el-menu-item>
+              <el-menu-item index="/specs">商品规格</el-menu-item>
+              <el-menu-item index="/goods">商品管理</el-menu-item>
+              <el-menu-item index="/member">会员管理</el-menu-item>
+              <el-menu-item index="/banner">轮播图管理</el-menu-item>
+              <el-menu-item index="/seckill">秒杀管理</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
         </el-menu>

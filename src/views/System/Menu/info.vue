@@ -176,15 +176,11 @@ export default {
 @import "../../../stylus/index.styl"
 
 >>>.el-dialog__body
-  padding 30px 45px 10px
+  padding 30px
 
 >>>.el-dialog__title,
 >>>.el-radio__input.is-checked +.el-radio__label,.el-select-dropdown__item.selected
   color $color
-
->>>.el-dialog__header
-  border-bottom 1px solid $bordercolor
-  padding 15px 20px 15px
 
 .add:active
   background $activecolor

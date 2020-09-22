@@ -1,4 +1,4 @@
-import { getMenuList, getRoleList } from '@/axios'
+import { getMenuList, getRoleList, getUserList, getCateList } from '@/axios'
 
 
 export default ({
@@ -21,6 +21,26 @@ export default ({
     getRoleList().then(res => {
       if (res.code == 200) {
         commit('reqRoleList', res.list)
+      }
+    })
+  },
+  //获取管路员列表
+  getActionUser({
+    commit
+  }, pageInfo) {
+    getUserList(pageInfo).then(res => {
+      if (res.code == 200) {
+        commit('reqUserList', res.list)
+      }
+    })
+  },
+  //获取分类列表
+  getActionCate({
+    commit
+  }, pageInfo) {
+    getCateList(pageInfo).then(res => {
+      if (res.code == 200) {
+        commit('reqCateList', res.list)
       }
     })
   }

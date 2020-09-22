@@ -1,6 +1,8 @@
 //接口集合模块
 import http from './axios'
 
+/* ------------------------------------菜单------------------------------------- */
+
 //菜单添加接口
 export function getMenuAdd(data) {
   return http.post('/menuadd', data)
@@ -57,4 +59,76 @@ export function getRoleEdit(data) {
 //角色删除
 export function getRoleDel(id) {
   return http.post('/roledelete', { id })
+}
+
+/* ------------------------------------管理员------------------------------------- */
+
+//管理员添加接口
+export function getUserAdd(data) {
+  return http.post('/useradd', data)
+}
+
+//管理员总数
+export function getUserCount() {
+  return http.get('/usercount')
+}
+
+//管理员列表接口
+export function getUserList(params) {
+  return http.get('/userlist', {
+    params
+  })
+}
+
+//管理员获取（一条）
+export function getUserInfo(params) {
+  return http.get('/userinfo', {
+    params
+  })
+}
+
+//管理员修改
+export function getUserEdit(data) {
+  return http.post('/useredit', data)
+}
+
+//管理员删除
+export function getUserDel(data) {
+  return http.post('/userdelete', data)
+}
+
+//管理员登陆
+export function getUserLogin(data) {
+  return http.post('/userlogin', data)
+}
+
+/* ------------------------------------分类------------------------------------- */
+
+//商品分类添加接口
+export function getCateAdd(data) {
+  return http.post('/cateadd', data)
+}
+
+//商品分类列表接口
+export function getCateList(params) {
+  return http.get('/catelist?istree=1', {
+    params
+  })
+}
+
+//商品分类获取（一条）
+export function getCateInfo(params) {
+  return http.get('/cateinfo', {
+    params
+  })
+}
+
+//商品分类修改
+export function getCateEdit(data) {
+  return http.post('/cateedit', data)
+}
+
+//商品分类删除
+export function getCateDel(id) {
+  return http.post('/catedelete', { id })
 }

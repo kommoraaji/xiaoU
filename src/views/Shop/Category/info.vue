@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      :title="info.isadd ? '添加角色' : '编辑角色'"
+      :title="info.isadd ? '添加菜单' : '编辑菜单'"
       :visible.sync="info.isshow"
       width="40%"
       :before-close="closeform"
@@ -12,20 +12,38 @@
         ref="formInfo"
         label-width="80px"
       >
-        <el-form-item label="角色名称" prop="rolename">
-          <el-input v-model="formInfo.rolename"></el-input>
+        <el-form-item label="上级分类">
+          <el-select v-model="formInfo.pid" placeholder="请选择">
+            <el-option label="顶级目录" :value="0"></el-option>
+            <el-option
+              v-for="item in getStateCate"
+              :key="item.id"
+              :label="item.catename"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
         </el-form-item>
 
-        <el-form-item label="权限">
-          <el-tree
-            :data="getStateMenu"
-            show-checkbox
-            node-key="id"
-            default-expand-all
-            ref="tree"
-            :props="defaultProps"
+        <el-form-item label="分类名称" prop="catename">
+          <el-input v-model="formInfo.catename"></el-input>
+        </el-form-item>
+
+        <el-form-item label="分类图片">
+          <el-upload
+            action=""
+            :auto-upload="false"
+            list-type="picture-card"
+            :limit="1"
+            :on-preview="handPreview"
+            :on-change="change"
+            :file-list="filelist"
           >
-          </el-tree>
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible" :append-to-body="true">
+            <img width="100%" :src="dialogImageUrl" alt="" />
+          </el-dialog>
         </el-form-item>
 
         <el-form-item label="状态">
@@ -50,7 +68,7 @@
   </div>
 </template>
 <script>
-import { getRoleAdd, getRoleEdit } from "@/axios";
+import { getCateAdd, getCateEdit } from "@/axios";
 import { mapActions, mapGetters } from "vuex";
 export default {
   props: {
@@ -66,38 +84,52 @@ export default {
   },
   data() {
     return {
+      dialogVisible: false,
+      dialogImageUrl: "",
       formInfo: {
-        rolename: "",
-        menus: "",
+        pid: "",
+        catename: "",
+        img: "",
         status: 1
       },
+      filelist: [],
       rules: {
-        rolename: [
-          { required: true, message: "请输入角色名称", trigger: "blur" },
-          { min: 2, max: 5, message: "长度在 2 到 5 个字符", trigger: "blur" }
+        catename: [
+          { required: true, message: "请输入分类名称", trigger: "blur" },
+          { min: 2, max: 8, message: "长度在 2 到 8 个字符", trigger: "blur" }
         ]
-      },
-      defaultProps: {
-        children: "children",
-        label: "title"
       }
     };
   },
   computed: {
-    ...mapGetters(["getStateMenu", "getStateRole"])
+    ...mapGetters(["getStateCate"])
   },
   methods: {
-    ...mapActions(["getActionMenu", "getActionRole"]),
+    ...mapActions(["getActionCate"]),
+    //关闭窗口
     closeform() {
       (this.info.isshow = false), this.reset();
       this.$refs.formInfo.clearValidate();
     },
+    //预览
+    handPreview(file) {
+      console.log(file);
+      this.dialogVisible = true;
+      this.dialogImageUrl = file.url;
+    },
+    change(file, fileList) {
+      // console.log(file);
+      this.formInfo.img = file.raw;
+    },
     subinfo() {
       this.$refs.formInfo.validate(valid => {
         if (valid) {
+          let formdata = new FormData();
+          for (let k in this.formInfo) {
+            formdata.append(k, this.formInfo[k]);
+          }
           if (this.info.isadd) {
-            this.formInfo.menus = this.$refs.tree.getCheckedKeys().join(",");
-            getRoleAdd(this.formInfo).then(res => {
+            getCateAdd(formdata).then(res => {
               if (res.code == 200) {
                 this.$message.success(res.msg);
               } else if (res.code == 500) {
@@ -107,10 +139,10 @@ export default {
               }
               this.info.isshow = false;
               this.reset();
-              this.getActionRole();
+              this.getActionCate();
             });
           } else {
-            getRoleEdit(this.formInfo).then(res => {
+            getCateEdit(formdata).then(res => {
               if (res.code == 200) {
                 this.$message.success(res.msg);
               } else if (res.code == 500) {
@@ -120,7 +152,7 @@ export default {
               }
               this.info.isshow = false;
               this.reset();
-              this.getActionRole();
+              this.getActionCate();
             });
           }
         } else {
@@ -136,15 +168,16 @@ export default {
     },
     reset() {
       this.formInfo = {
-        rolename: "",
-        menus: "",
+        pid: "",
+        catename: "",
+        img: "",
         status: 1
       };
+      this.filelist = [];
     }
   },
   mounted() {
-    this.getActionMenu();
-    this.getActionRole();
+    this.getActionCate();
   }
 };
 </script>
@@ -158,13 +191,16 @@ export default {
 >>>.el-radio__input.is-checked +.el-radio__label,.el-select-dropdown__item.selected
   color $color
 
+>>>.el-upload--picture-card:hover, .el-upload:focus
+  border-color $bordercolor
+  color $color
+
 .add:active
   background $activecolor
 
 >>>.el-select .el-input.is-focus .el-input__inner,
 >>>.el-radio__input:hover .el-radio__inner,
 >>>.el-input__inner:focus
->>>.el-checkbox__inner:hover
   border-color $color
 
 .el-select-dropdown__item:hover
@@ -175,8 +211,7 @@ export default {
   color $white
 
 >>>.el-radio__input.is-checked .el-radio__inner,
->>>.el-switch.is-checked .el-switch__core,
->>>.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner
+>>>.el-switch.is-checked .el-switch__core
   border-color $color
   background $color
 

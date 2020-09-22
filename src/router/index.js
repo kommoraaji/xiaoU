@@ -39,17 +39,17 @@ let router = new Router({
         {
           path: '/goods',
           component: () => import("@/views/Shop/Goods"),
-          meta: { title: "商品分类" }
+          meta: { title: "商品管理" }
         },
         {
           path: '/category',
           component: () => import("@/views/Shop/Category"),
-          meta: { title: "分类管理" }
+          meta: { title: "商品分类管理" }
         },
         {
           path: '/specs',
           component: () => import("@/views/Shop/Specs"),
-          meta: { title: "商品属性管理" }
+          meta: { title: "商品规格属性" }
         },
         {
           path: '/member',

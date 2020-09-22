@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      :title="info.isadd ? '添加角色' : '编辑角色'"
+      :title="info.isadd ? '添加管理员' : '编辑管理员'"
       :visible.sync="info.isshow"
       width="40%"
       :before-close="closeform"
@@ -10,22 +10,30 @@
         :model="formInfo"
         :rules="rules"
         ref="formInfo"
-        label-width="80px"
+        label-width="100px"
       >
-        <el-form-item label="角色名称" prop="rolename">
-          <el-input v-model="formInfo.rolename"></el-input>
+        <el-form-item label="角色名称" prop="roleid">
+          <el-select v-model="formInfo.roleid" placeholder="请选择">
+            <el-option
+              v-for="item in getStateRole"
+              :key="item.id"
+              :label="item.rolename"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
         </el-form-item>
 
-        <el-form-item label="权限">
-          <el-tree
-            :data="getStateMenu"
-            show-checkbox
-            node-key="id"
-            default-expand-all
-            ref="tree"
-            :props="defaultProps"
-          >
-          </el-tree>
+        <el-form-item label="管理员名称" prop="username">
+          <el-input v-model="formInfo.username"></el-input>
+        </el-form-item>
+
+        <el-form-item label="管理员密码">
+          <el-input
+            v-model="formInfo.password"
+            show-password
+            clearable
+          ></el-input>
         </el-form-item>
 
         <el-form-item label="状态">
@@ -50,7 +58,7 @@
   </div>
 </template>
 <script>
-import { getRoleAdd, getRoleEdit } from "@/axios";
+import { getUserAdd, getUserEdit, getUserCount } from "@/axios";
 import { mapActions, mapGetters } from "vuex";
 export default {
   props: {
@@ -67,37 +75,42 @@ export default {
   data() {
     return {
       formInfo: {
-        rolename: "",
-        menus: "",
+        roleid: "",
+        username: "",
+        password: "",
         status: 1
       },
       rules: {
-        rolename: [
-          { required: true, message: "请输入角色名称", trigger: "blur" },
-          { min: 2, max: 5, message: "长度在 2 到 5 个字符", trigger: "blur" }
-        ]
+        username: [
+          { required: true, message: "请输入管理员名称", trigger: "blur" },
+          { min: 2, max: 8, message: "长度在 2 到 8 个字符", trigger: "blur" }
+        ],
+        roleid: [{ required: true, message: "请选择所属角色", trigger: "blur" }]
       },
-      defaultProps: {
-        children: "children",
-        label: "title"
+      pageInfo: {
+        size: 8,
+        page: 1
       }
     };
   },
   computed: {
-    ...mapGetters(["getStateMenu", "getStateRole"])
+    ...mapGetters(["getStateUser", "getStateRole"])
   },
   methods: {
-    ...mapActions(["getActionMenu", "getActionRole"]),
+    ...mapActions(["getActionRole", "getActionUser"]),
     closeform() {
       (this.info.isshow = false), this.reset();
       this.$refs.formInfo.clearValidate();
     },
     subinfo() {
+      if (this.isadd && !this.formInfo.password) {
+        this.$message.warning("请输入密码");
+        return;
+      }
       this.$refs.formInfo.validate(valid => {
         if (valid) {
           if (this.info.isadd) {
-            this.formInfo.menus = this.$refs.tree.getCheckedKeys().join(",");
-            getRoleAdd(this.formInfo).then(res => {
+            getUserAdd(this.formInfo).then(res => {
               if (res.code == 200) {
                 this.$message.success(res.msg);
               } else if (res.code == 500) {
@@ -107,10 +120,10 @@ export default {
               }
               this.info.isshow = false;
               this.reset();
-              this.getActionRole();
+              this.getCount();
             });
           } else {
-            getRoleEdit(this.formInfo).then(res => {
+            getUserEdit(this.formInfo).then(res => {
               if (res.code == 200) {
                 this.$message.success(res.msg);
               } else if (res.code == 500) {
@@ -120,7 +133,7 @@ export default {
               }
               this.info.isshow = false;
               this.reset();
-              this.getActionRole();
+              this.getCount();
             });
           }
         } else {
@@ -136,14 +149,21 @@ export default {
     },
     reset() {
       this.formInfo = {
-        rolename: "",
-        menus: "",
+        roleid: "",
+        username: "",
+        password: "",
         status: 1
       };
+    },
+    getCount() {
+      getUserCount().then(res => {
+        if (res.code == 200) {
+          this.$store.dispatch("getActionUser", this.pageInfo);
+        }
+      });
     }
   },
   mounted() {
-    this.getActionMenu();
     this.getActionRole();
   }
 };
@@ -164,7 +184,6 @@ export default {
 >>>.el-select .el-input.is-focus .el-input__inner,
 >>>.el-radio__input:hover .el-radio__inner,
 >>>.el-input__inner:focus
->>>.el-checkbox__inner:hover
   border-color $color
 
 .el-select-dropdown__item:hover
@@ -175,8 +194,7 @@ export default {
   color $white
 
 >>>.el-radio__input.is-checked .el-radio__inner,
->>>.el-switch.is-checked .el-switch__core,
->>>.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner
+>>>.el-switch.is-checked .el-switch__core
   border-color $color
   background $color
 
