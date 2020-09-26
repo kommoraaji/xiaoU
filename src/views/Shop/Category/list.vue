@@ -100,6 +100,9 @@ export default {
 </script>
 <style lang="stylus" scoped>
 @import "../../../stylus/index.styl"
+>>>.el-table__row
+  height 65px
+
 .el-tooltip + .el-button
   margin-left 0
 

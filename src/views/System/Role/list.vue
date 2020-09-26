@@ -71,27 +71,30 @@ export default {
     ...mapActions(["getActionRole"]),
     editform(val) {
       this.$emit("editform", { ...val });
-      // let idarr = val.menus.split(",");
-      // console.log(idarr);
-      // if (idarr[0]) {
-      //   console.log(this.$refs.tree);
-      // }
     },
     delform(id) {
       this.$confirm("是否删除该条内容", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      }).then(() => {
-        getRoleDel(id).then(res => {
-          if (res.code == 200) {
-            this.$message.success(res.msg);
-            this.getActionRole();
-          } else {
-            this.$message.error(res.msg);
-          }
+      })
+        .then(() => {
+          getRoleDel(id).then(res => {
+            if (res.code == 200) {
+              this.$message.success(res.msg);
+              this.getActionRole();
+            } else {
+              this.$message.error(res.msg);
+            }
+            return;
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
         });
-      });
     }
   },
   mounted() {
@@ -101,6 +104,9 @@ export default {
 </script>
 <style lang="stylus" scoped>
 @import "../../../stylus/index.styl"
+>>>.el-table__row
+  height 65px
+
 .el-tooltip + .el-button
   margin-left 0
 

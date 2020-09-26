@@ -3,5 +3,5 @@ export default {
   roleList: [],
   userList: [],
   cateList: [],
-  iscollapse: false
+  iscollapse: true
 }

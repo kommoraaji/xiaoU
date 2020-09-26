@@ -4,7 +4,7 @@
       :title="info.isadd ? '添加角色' : '编辑角色'"
       :visible.sync="info.isshow"
       width="40%"
-      :before-close="closeform"
+      :before-close="cancel"
     >
       <el-form
         :model="formInfo"
@@ -21,9 +21,9 @@
             :data="getStateMenu"
             show-checkbox
             node-key="id"
-            default-expand-all
             ref="tree"
             :props="defaultProps"
+            :check-strictly="checkStrictly"
           >
           </el-tree>
         </el-form-item>
@@ -74,13 +74,14 @@ export default {
       rules: {
         rolename: [
           { required: true, message: "请输入角色名称", trigger: "blur" },
-          { min: 2, max: 5, message: "长度在 2 到 5 个字符", trigger: "blur" }
+          { min: 2, max: 8, message: "长度在 2 到 8 个字符", trigger: "blur" }
         ]
       },
       defaultProps: {
         children: "children",
         label: "title"
-      }
+      },
+      checkStrictly: false
     };
   },
   computed: {
@@ -88,15 +89,31 @@ export default {
   },
   methods: {
     ...mapActions(["getActionMenu", "getActionRole"]),
-    closeform() {
-      (this.info.isshow = false), this.reset();
-      this.$refs.formInfo.clearValidate();
+    setInfo(val) {
+      let idarr = val.menus.split(",");
+      if (idarr[0]) {
+        this.checkStrictly = true;
+        this.$nextTick(() => {
+          this.$refs.tree.setCheckedKeys(idarr);
+          this.checkStrictly = false;
+        });
+      }
+      this.formInfo = { ...val };
     },
+
     subinfo() {
+      let treeskey = this.$refs.tree
+        .getCheckedKeys()
+        .concat(this.$refs.tree.getHalfCheckedKeys());
+      if (treeskey.length) {
+        this.formInfo.menus = treeskey;
+      } else {
+        this.$message.warning("请选择权限");
+        return;
+      }
       this.$refs.formInfo.validate(valid => {
         if (valid) {
           if (this.info.isadd) {
-            this.formInfo.menus = this.$refs.tree.getCheckedKeys().join(",");
             getRoleAdd(this.formInfo).then(res => {
               if (res.code == 200) {
                 this.$message.success(res.msg);
@@ -129,17 +146,20 @@ export default {
         }
       });
     },
+    //取消&&关闭
     cancel() {
       this.info.isshow = false;
       this.$refs.formInfo.clearValidate();
       this.reset();
     },
+    //重置
     reset() {
       this.formInfo = {
         rolename: "",
         menus: "",
         status: 1
       };
+      this.$refs.tree.setCheckedKeys([]);
     }
   },
   mounted() {

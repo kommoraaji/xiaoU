@@ -5,10 +5,12 @@
         <i :class="iscollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"></i>
       </el-button>
     </el-row>
+
     <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>{{ $route.meta.title }}</el-breadcrumb-item>
     </el-breadcrumb>
+
     <el-row>
       <el-button
         class="back"
@@ -19,10 +21,61 @@
         @click="$router.back()"
       ></el-button>
     </el-row>
+
+    <div class="icontitle">
+      <el-badge :value="10" class="item">
+        <el-popover
+          placement="bottom-end"
+          width="200"
+          trigger="click"
+          content="暂无消息"
+        >
+          <ul style="width:100%">
+            <li class="news">消息一</li>
+            <li class="news">消息二</li>
+            <li class="news">消息三</li>
+            <li class="news">消息四</li>
+            <li class="news">
+              查看所有消息<i class="el-icon-right" style="margin-left:5px"></i>
+            </li>
+          </ul>
+          <i
+            class="el-icon-message"
+            slot="reference"
+            style="font-size:24px;color:red"
+          ></i>
+        </el-popover>
+      </el-badge>
+
+      <el-badge :value="10" class="item">
+        <el-popover
+          placement="bottom-end"
+          width="200"
+          trigger="click"
+          content="暂无消息"
+        >
+          <ul style="width:100%">
+            <li class="news">通知一</li>
+            <li class="news">通知二</li>
+            <li class="news">通知三</li>
+            <li class="news">通知四</li>
+            <li class="news">
+              查看所有消息<i class="el-icon-right" style="margin-left:5px"></i>
+            </li>
+          </ul>
+          <i
+            class="el-icon-message-solid"
+            slot="reference"
+            style="font-size:24px;color:#1E90FF"
+          ></i>
+        </el-popover>
+      </el-badge>
+    </div>
+
     <el-dropdown>
-      <span class="el-dropdown-link">
-        admin<i class="el-icon-arrow-down el-icon--right"></i>
-      </span>
+      <span class="el-dropdown-link"
+        >欢迎光临：admin<i class="el-icon-arrow-down el-icon--right"></i
+      ></span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item
           ><i class="el-icon-full-screen"></i>全屏操作</el-dropdown-item
@@ -42,15 +95,16 @@ import { mapState, mapMutations } from "vuex";
 export default {
   components: {},
   data() {
-    return {};
+    return {
+      visible: false
+    };
   },
   computed: {
     ...mapState(["iscollapse"])
   },
   methods: {
     ...mapMutations(["TOGGLE"])
-  },
-  mounted() {}
+  }
 };
 </script>
 <style lang="stylus" scoped>
@@ -73,6 +127,29 @@ export default {
   background none
   color $color
   border-color $color
+
+.icontitle
+  position absolute
+  right 300px
+  z-index 10
+
+.item
+  margin-top 10px
+  margin-right 25px
+
+.news
+  width 100%
+  height 40px
+  line-height 40px
+  padding-left 15px
+  box-sizing border-box
+
+.news:last-child
+  text-align center
+  cursor pointer
+
+.news:hover
+  background rgba(204,204,204,.1)
 
 .el-main
   background-color #f7f7f7

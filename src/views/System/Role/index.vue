@@ -28,7 +28,7 @@ export default {
     editform(val) {
       this.info.isadd = false;
       this.info.isshow = true;
-      this.$refs.dialog.formInfo = val;
+      this.$refs.dialog.setInfo(val);
     }
   },
   components: {
